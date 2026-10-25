@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --c-primary: #0F2A4A;
+  --c-accent: #F59E0B;
+  --c-verified: #16A34A;
+  --c-vouched: #2563EB;
+  --c-danger: #DC2626;
+  --c-bg: #F8FAFC;
+  --c-card: #FFFFFF;
+  --c-text: #0F172A;
+  --c-muted: #64748B;
+}
+
+body {
+  background-color: #0B192C;
+  color: var(--c-text);
+  font-family: var(--font-inter), var(--font-noto-sans-devanagari), system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 42, 74, 0.2);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 42, 74, 0.4);
+}
+
+/* Prevent unwanted callout on mobile tap */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
