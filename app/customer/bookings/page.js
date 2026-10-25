@@ -54,21 +54,21 @@ export default function CustomerBookingsPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'REQUESTED':
-        return { label: 'Requested', variant: 'accent', icon: Clock };
+        return { label: t('status.requested', 'Requested'), variant: 'accent', icon: Clock };
       case 'COUNTERED':
-        return { label: 'Countered', variant: 'default', icon: AlertCircle };
+        return { label: t('status.countered', 'Countered'), variant: 'default', icon: AlertCircle };
       case 'CONFIRMED':
-        return { label: 'Price Locked', variant: 'secondary', icon: CheckCircle2 };
+        return { label: t('status.confirmed', 'Price Locked'), variant: 'secondary', icon: CheckCircle2 };
       case 'STARTED':
       case 'EXTRA_PENDING':
-        return { label: 'In Progress', variant: 'accent', icon: Play };
+        return { label: t('status.started', 'In Progress'), variant: 'accent', icon: Play };
       case 'COMPLETED':
       case 'RATED':
-        return { label: 'Completed', variant: 'verified', icon: CheckCircle2 };
+        return { label: t('status.completed', 'Completed'), variant: 'verified', icon: CheckCircle2 };
       case 'CANCELLED':
-        return { label: 'Cancelled', variant: 'neutral', icon: Ban };
+        return { label: t('status.cancelled', 'Cancelled'), variant: 'neutral', icon: Ban };
       case 'DECLINED':
-        return { label: 'Declined', variant: 'danger', icon: Ban };
+        return { label: t('status.declined', 'Declined'), variant: 'danger', icon: Ban };
       default:
         return { label: status, variant: 'neutral', icon: Clock };
     }

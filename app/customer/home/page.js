@@ -29,8 +29,10 @@ import {
   Award,
   AlertTriangle,
   Clock,
-  ArrowRight
+  ArrowRight,
+  LogOut,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const TOP_RATED_PARTNERS = [
   {
@@ -101,6 +103,13 @@ export default function CustomerHomePage() {
   const [search, setSearch] = useState('');
   const [isListening, setIsListening] = useState(false);
 
+  const signOut = useAppStore((state) => state.signOut);
+  const handleSignOut = () => {
+    signOut();
+    toast.info('Signed out');
+    router.push('/signin');
+  };
+
   const bookings = useAppStore((state) => state.bookings) || [];
   const activeBooking = bookings.find(
     (b) => !['COMPLETED', 'RATED', 'DECLINED', 'CANCELLED'].includes(b.status)
@@ -143,9 +152,16 @@ export default function CustomerHomePage() {
           </div>
           <div className="flex items-center gap-2">
             <LanguageSwitch compact />
-            <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20 text-white">
-              <span className="text-xs font-bold">👤</span>
-            </div>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              title="Sign out"
+              aria-label="Sign out"
+              className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center gap-1 border border-white/20 text-white text-[11px] font-semibold active:scale-95 transition-all shadow-xs"
+            >
+              <LogOut className="w-3.5 h-3.5 text-amber-300" />
+              <span>Sign out</span>
+            </button>
           </div>
         </div>
 

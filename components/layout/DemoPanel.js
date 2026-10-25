@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { useT } from '@/hooks/useT';
 import { toast } from 'sonner';
-import { Sliders, RotateCcw, User, Wrench, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Sliders, RotateCcw, User, Wrench, Shield, ChevronDown, ChevronUp, LogOut } from 'lucide-react';
 import clsx from 'clsx';
 
 import { useMounted } from '@/hooks/useMounted';
@@ -19,6 +19,7 @@ export function DemoPanel() {
   const role = useAppStore((state) => state.currentUser?.role) || 'customer';
   const setRole = useAppStore((state) => state.setRole);
   const resetState = useAppStore((state) => state.resetState);
+  const signOut = useAppStore((state) => state.signOut);
   const activeBookingId = useAppStore((state) => state.activeBookingId);
   const bookings = useAppStore((state) => state.bookings) || [];
   const setActiveWorkerId = useAppStore((state) => state.setActiveWorkerId);
@@ -37,6 +38,12 @@ export function DemoPanel() {
       router.push('/admin');
     }
     toast.success(`Switched role to ${newRole.toUpperCase()}`);
+  };
+
+  const handleRestartFromLogin = () => {
+    signOut();
+    toast.info('Signed out — restarting from login');
+    router.push('/signin');
   };
 
   const handleReset = () => {
@@ -111,7 +118,15 @@ export function DemoPanel() {
             </div>
           </div>
 
-          <div className="pt-2 border-t border-slate-800">
+          <div className="pt-2 border-t border-slate-800 space-y-2">
+            <button
+              type="button"
+              onClick={handleRestartFromLogin}
+              className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-full bg-slate-800 hover:bg-slate-700 text-amber-300 text-xs font-semibold transition-colors"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Restart from login</span>
+            </button>
             <button
               type="button"
               onClick={handleReset}

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAppStore } from '@/store/useAppStore';
 import { useT } from '@/hooks/useT';
 import {
   Wrench,
@@ -23,18 +24,29 @@ import {
 export default function TutorialPage() {
   const router = useRouter();
   const t = useT();
+  const currentUser = useAppStore((state) => state.currentUser);
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  const handleNext = () => {
-    if (currentSlide < 2) {
-      setCurrentSlide(currentSlide + 1);
+  const navigateNext = () => {
+    if (currentUser?.role === 'worker') {
+      router.push('/worker/home');
+    } else if (currentUser?.role === 'customer') {
+      router.push('/customer/home');
     } else {
       router.push('/role');
     }
   };
 
+  const handleNext = () => {
+    if (currentSlide < 2) {
+      setCurrentSlide(currentSlide + 1);
+    } else {
+      navigateNext();
+    }
+  };
+
   const handleSkip = () => {
-    router.push('/role');
+    navigateNext();
   };
 
   return (

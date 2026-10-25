@@ -34,6 +34,7 @@ import {
   Headphones,
   Wrench,
   AlertCircle,
+  LogOut,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -133,9 +134,30 @@ export default function WorkerHomePage() {
     toast.info('Coming soon in the full version');
   };
 
+  const signOut = useAppStore((state) => state.signOut);
+  const handleSignOut = () => {
+    signOut();
+    toast.info('Signed out');
+    router.push('/signin');
+  };
+
   return (
     <Screen
-      rightAction={<LanguageSwitch compact />}
+      rightAction={
+        <div className="flex items-center gap-1.5">
+          <LanguageSwitch compact />
+          <button
+            type="button"
+            onClick={handleSignOut}
+            title="Sign out"
+            aria-label="Sign out"
+            className="px-2 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold flex items-center gap-1 active:scale-95 transition-all shadow-xs"
+          >
+            <LogOut className="w-3 h-3 text-red-500" />
+            <span>Sign out</span>
+          </button>
+        </div>
+      }
       hasNav
       className="bg-surface"
     >

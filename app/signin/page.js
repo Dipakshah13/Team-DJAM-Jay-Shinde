@@ -96,11 +96,7 @@ export default function SignInPage() {
       toast.success('Mobile verified successfully!');
       setTimeout(() => {
         signIn(`+91 ${phone}`, role);
-        if (role === 'worker') {
-          router.push('/worker/home');
-        } else {
-          router.push('/tutorial');
-        }
+        router.push('/tutorial');
       }, 1400);
     } else {
       toast.error('Invalid OTP. Use demo OTP: 1234');
