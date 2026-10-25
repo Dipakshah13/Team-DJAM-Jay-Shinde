@@ -8,20 +8,34 @@ import { toast } from 'sonner';
 import { Sliders, RotateCcw, User, Wrench, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import clsx from 'clsx';
 
+import { useMounted } from '@/hooks/useMounted';
+
 export function DemoPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const t = useT();
+  const mounted = useMounted();
 
   const role = useAppStore((state) => state.currentUser?.role) || 'customer';
   const setRole = useAppStore((state) => state.setRole);
   const resetState = useAppStore((state) => state.resetState);
+  const activeBookingId = useAppStore((state) => state.activeBookingId);
+  const bookings = useAppStore((state) => state.bookings) || [];
+  const setActiveWorkerId = useAppStore((state) => state.setActiveWorkerId);
 
   const handleRoleChange = (newRole) => {
     setRole(newRole);
-    if (newRole === 'customer') router.push('/customer/home');
-    if (newRole === 'worker') router.push('/worker/home');
-    if (newRole === 'admin') router.push('/admin');
+    if (newRole === 'customer') {
+      router.push('/customer/home');
+    } else if (newRole === 'worker') {
+      const activeBooking = bookings.find((b) => b.id === activeBookingId);
+      if (activeBooking?.workerId) {
+        setActiveWorkerId(activeBooking.workerId);
+      }
+      router.push('/worker/home');
+    } else if (newRole === 'admin') {
+      router.push('/admin');
+    }
     toast.success(`Switched role to ${newRole.toUpperCase()}`);
   };
 
@@ -30,6 +44,8 @@ export function DemoPanel() {
     toast.success(t('demo.resetSuccess'));
     router.push('/customer/home');
   };
+
+  if (!mounted) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end">

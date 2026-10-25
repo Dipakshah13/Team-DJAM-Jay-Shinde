@@ -31,6 +31,7 @@ export default function SignInPage() {
   const currentLang = useAppStore((state) => state.language);
 
   const [phone, setPhone] = useState('9820194820');
+  const [role, setRole] = useState('customer'); // 'customer' | 'worker'
   const [step, setStep] = useState('PHONE'); // 'PHONE' | 'OTP' | 'SUCCESS'
   const [otp, setOtp] = useState(['', '', '', '']);
   const [resendTimer, setResendTimer] = useState(24);
@@ -94,8 +95,12 @@ export default function SignInPage() {
       setStep('SUCCESS');
       toast.success('Mobile verified successfully!');
       setTimeout(() => {
-        signIn(`+91 ${phone}`, 'customer');
-        router.push('/tutorial');
+        signIn(`+91 ${phone}`, role);
+        if (role === 'worker') {
+          router.push('/worker/home');
+        } else {
+          router.push('/tutorial');
+        }
       }, 1400);
     } else {
       toast.error('Invalid OTP. Use demo OTP: 1234');
@@ -228,6 +233,32 @@ export default function SignInPage() {
               <p className="text-slate-500 text-xs mt-0.5">
                 We will send a 4-digit verification code to confirm your booking.
               </p>
+            </div>
+
+            {/* Role selection chips */}
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setRole('customer')}
+                className={`flex-1 py-2 px-3 rounded-xl border text-xs font-bold transition-all text-center ${
+                  role === 'customer'
+                    ? 'bg-[#0B1F3A] text-white border-[#0B1F3A] shadow-xs'
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                👤 I&apos;m a Customer
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole('worker')}
+                className={`flex-1 py-2 px-3 rounded-xl border text-xs font-bold transition-all text-center ${
+                  role === 'worker'
+                    ? 'bg-[#FF6F00] text-white border-[#FF6F00] shadow-xs'
+                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                }`}
+              >
+                🔧 I&apos;m a Worker
+              </button>
             </div>
 
             {/* Mobile field with +91 chip */}

@@ -20,6 +20,7 @@ import {
   Flame,
   Droplets,
   Zap,
+  Briefcase,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -182,7 +183,7 @@ export function PassportCard({ worker, bookings = [] }) {
 
                 <div className="mt-1.5 flex items-center gap-2">
                   <div className="px-2 py-0.5 rounded-full bg-white/10 backdrop-blur-md flex items-center gap-1">
-                    <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                    <Briefcase className="w-3 h-3 text-cyan-300" />
                     <span className="text-[10px] font-bold text-white">
                       {totalCompleted} Completed Jobs
                     </span>
@@ -248,10 +249,11 @@ export function PassportCard({ worker, bookings = [] }) {
                 <span className="text-xs font-bold text-heading block truncate">
                   Sanitary & Fixtures
                 </span>
-                <div className="flex items-center gap-1 text-amber-600 text-[11px] mt-0.5">
-                  <Star className="w-3 h-3 fill-amber-500" />
-                  <span className="font-bold">4.96</span>
-                  <span className="text-slate-400 font-normal">({totalCompleted})</span>
+                <div className="flex items-center gap-1 text-emerald-700 text-[11px] mt-0.5">
+                  <span className="font-bold bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    96% Positive
+                  </span>
+                  <span className="text-slate-500 font-normal">({totalCompleted} jobs)</span>
                 </div>
               </div>
               <div className="mt-2 pt-1.5 border-t border-slate-200/80 flex items-center justify-between">

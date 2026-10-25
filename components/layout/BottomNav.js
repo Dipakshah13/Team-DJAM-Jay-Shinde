@@ -3,30 +3,39 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useAppStore } from '@/store/useAppStore';
 import { useT } from '@/hooks/useT';
-import { Home, Award, Settings, ShieldCheck, HelpCircle, User } from 'lucide-react';
+import { useMounted } from '@/hooks/useMounted';
+import { Home, Award, Settings, ShieldCheck, HelpCircle, Calendar } from 'lucide-react';
 import clsx from 'clsx';
 
 export function BottomNav() {
   const pathname = usePathname();
   const router = useRouter();
   const t = useT();
+  const mounted = useMounted();
   const role = useAppStore((state) => state.currentUser?.role) || 'customer';
 
-  // Do not render nav on signin, tutorial, or role selection
-  if (['/', '/signin', '/tutorial', '/role'].includes(pathname)) {
+  // Do not render nav on signin, tutorial, role selection, root, or vouch pages
+  if (
+    ['/', '/signin', '/tutorial', '/role'].includes(pathname) ||
+    pathname.startsWith('/vouch')
+  ) {
+    return null;
+  }
+
+  if (!mounted) {
     return null;
   }
 
   const customerItems = [
     { label: t('nav.home'), href: '/customer/home', icon: Home },
-    { label: t('role.customer.title').split(' ')[0], href: '/customer/workers', icon: User },
-    { label: t('job.helpSupport').split(' ')[0], href: '/help', icon: HelpCircle },
+    { label: t('nav.bookings'), href: '/customer/bookings', icon: Calendar },
+    { label: t('nav.help'), href: '/help', icon: HelpCircle },
   ];
 
   const workerItems = [
     { label: t('nav.home'), href: '/worker/home', icon: Home },
     { label: t('nav.passport'), href: '/worker/passport', icon: Award },
-    { label: 'Profile', href: '/worker/setup', icon: Settings },
+    { label: t('nav.profile'), href: '/worker/setup', icon: Settings },
   ];
 
   const adminItems = [
@@ -46,7 +55,9 @@ export function BottomNav() {
       <div className="flex items-center justify-around">
         {items.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+          const isActive =
+            pathname === item.href ||
+            (item.href !== '/' && pathname.startsWith(item.href));
 
           return (
             <button

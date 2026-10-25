@@ -2,6 +2,7 @@ import { Inter, Noto_Sans_Devanagari } from 'next/font/google';
 import { Toaster } from 'sonner';
 import { PhoneFrame } from '@/components/layout/PhoneFrame';
 import { BottomNav } from '@/components/layout/BottomNav';
+import { StoreHydrator } from '@/components/layout/StoreHydrator';
 import './globals.css';
 
 const inter = Inter({
@@ -38,10 +39,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${notoDevanagari.variable}`}>
       <body className="antialiased">
-        <PhoneFrame>
-          {children}
-          <BottomNav />
-        </PhoneFrame>
+        <StoreHydrator>
+          <PhoneFrame>
+            {children}
+            <BottomNav />
+          </PhoneFrame>
+        </StoreHydrator>
         <Toaster position="top-center" richColors />
       </body>
     </html>

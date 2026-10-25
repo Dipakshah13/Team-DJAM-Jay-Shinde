@@ -124,7 +124,7 @@ function WorkersListContent() {
                 : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
-            <span>Nearest (0.8 km)</span>
+            <span>Nearest ({ranked[0]?.distanceKm || 1.2} km)</span>
           </button>
 
           <button
@@ -241,11 +241,15 @@ function WorkersListContent() {
             {/* Micro bio & credentials */}
             <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 space-y-2">
               <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
-                <span>Trust Score: {selectedWorkerForSheet.passport?.trustScore || 94}/100</span>
-                <span className="text-[#ff6f00]">★ {selectedWorkerForSheet.rating || 4.9}</span>
+                <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {(selectedWorkerForSheet.jobsDone || 0) > 5 ? '96% positive feedback' : 'New on platform'}
+                </span>
+                <span className="text-slate-600 font-bold">
+                  {selectedWorkerForSheet.jobsDone || 0} jobs done
+                </span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Specialist in home repairs with over {selectedWorkerForSheet.experienceYears || 6} years of field experience in Bandra and Khar. Certified by Mumbai Technicians Guild.
+                Specialist in home repairs with {selectedWorkerForSheet.experienceYears || 2} years of field experience in {selectedWorkerForSheet.area || 'Mumbai'}. Verified on platform.
               </p>
             </div>
 

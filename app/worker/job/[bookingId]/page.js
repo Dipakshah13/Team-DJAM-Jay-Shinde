@@ -55,13 +55,17 @@ export default function WorkerJobPage() {
   const [extraAmount, setExtraAmount] = useState(120);
   const [isExtraModalOpen, setIsExtraModalOpen] = useState(false);
 
-  // Synchronize stage with booking status on initial load
+  const bookingStatus = booking?.status;
+  const startedTimeStr = booking?.startedAt
+    ? new Date(booking.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    : 'Just now';
+
   useEffect(() => {
-    if (!booking) return;
-    if (booking.status === 'CONFIRMED') setActiveStage(1);
-    else if (['STARTED', 'EXTRA_PENDING'].includes(booking.status)) setActiveStage(2);
-    else if (['COMPLETED', 'RATED'].includes(booking.status)) setActiveStage(4);
-  }, [booking?.status]);
+    if (!bookingStatus) return;
+    if (bookingStatus === 'CONFIRMED') setActiveStage(1);
+    else if (['STARTED', 'EXTRA_PENDING'].includes(bookingStatus)) setActiveStage(2);
+    else if (['COMPLETED', 'RATED'].includes(bookingStatus)) setActiveStage(4);
+  }, [bookingStatus]);
 
   // Digital stopwatch timer
   useEffect(() => {
@@ -229,7 +233,7 @@ export default function WorkerJobPage() {
                 </span>
               </div>
               <p className="text-[11px] text-slate-300">
-                14 bookings · Khar West
+                Verified Customer · {booking.landmark || 'Bandra-Khar'}
               </p>
             </div>
           </div>
@@ -263,7 +267,7 @@ export default function WorkerJobPage() {
               <span className="text-[10px] uppercase font-black bg-amber-400 text-slate-900 px-1.5 py-0.2 rounded">
                 Landmark Guide
               </span>
-              <span className="text-[10px] text-amber-200">Khar West</span>
+              <span className="text-[10px] text-amber-200">{booking.landmark ? 'Local Landmark' : 'Mumbai'}</span>
             </div>
             <p className="text-xs font-bold text-white">
               &ldquo;{booking.landmark || 'Opposite the blue temple, next to society gate 2'}&rdquo;
@@ -399,7 +403,7 @@ export default function WorkerJobPage() {
                 {formatTimer(timerSeconds)}
               </div>
               <p className="text-[11px] text-slate-400">
-                Started at 10:15 AM · Khar West
+                Started at {startedTimeStr} · {booking.landmark || 'Customer Location'}
               </p>
 
               {/* Live Step Tracker Pill */}

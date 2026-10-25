@@ -1,7 +1,9 @@
 'use client';
 
 import { useT } from '@/hooks/useT';
-import { Star, ShieldCheck, Clock, MapPin, Briefcase, Award, ArrowRight, User } from 'lucide-react';
+import { TrustBadge } from '@/components/domain/TrustBadge';
+import { calculateEta, formatEtaLabel } from '@/lib/matching';
+import { ShieldCheck, Clock, MapPin, Briefcase, Award, ArrowRight, User, ThumbsUp } from 'lucide-react';
 import clsx from 'clsx';
 
 export function WorkerCard({
@@ -12,12 +14,11 @@ export function WorkerCard({
 }) {
   const t = useT();
 
-  const rating = worker.rating || (worker.passport?.trustScore ? (worker.passport.trustScore / 20).toFixed(1) : '4.92');
-  const reviewsCount = worker.reviewsCount || Math.floor((worker.jobsDone || 100) * 0.45);
-  const expYears = worker.experienceYears || worker.yearsExp || 5;
-  const jobsDone = worker.jobsDone || 240;
-  const distance = worker.distanceKm || '1.2';
-  const eta = worker.etaMinutes || (worker.etaLabel ? worker.etaLabel.replace(/[^0-9]/g, '') : '20');
+  const jobsDone = worker.jobsDone || 0;
+  const distance = worker.distanceKm ?? 1.5;
+  const eta = worker.etaLabel || formatEtaLabel(calculateEta(distance));
+  const expYears = worker.experienceYears || worker.yearsExp || 2;
+  const positiveFeedback = jobsDone > 5 ? '96% positive' : 'New on platform';
 
   return (
     <article
@@ -28,23 +29,21 @@ export function WorkerCard({
           : 'border-slate-100 hover:border-slate-200'
       )}
     >
-      {/* Top Match / Reaches in Tag */}
+      {/* Top Match / Trust Header */}
       <div className="flex items-center justify-between mb-3">
-        {isTopMatch ? (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-orange-100 text-[#9e4200] text-xs font-bold shadow-xs">
-            <Award className="w-4 h-4 text-[#ff6f00]" />
-            <span>Top Match</span>
-          </div>
-        ) : (
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-800 text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
-            <span>{worker.societyVouches || 42} Society Vouches</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {isTopMatch && (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-100 text-[#9e4200] text-xs font-bold shadow-xs">
+              <Award className="w-3.5 h-3.5 text-[#ff6f00]" />
+              <span>Top Match</span>
+            </div>
+          )}
+          <TrustBadge worker={worker} showDetailButton={false} />
+        </div>
 
         <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-semibold">
           <Clock className="w-3.5 h-3.5 text-amber-600" />
-          <span>Reaches in ~{eta} min</span>
+          <span>{eta}</span>
         </div>
       </div>
 
@@ -72,53 +71,50 @@ export function WorkerCard({
           </div>
 
           <div className="flex items-center gap-1 text-[11px] text-blue-700 font-medium mt-0.5 truncate">
-            <ShieldCheck className="w-3.5 h-3.5 flex-shrink-0" />
-            <span>Police & Skill Verified</span>
-            <span className="text-slate-400 font-normal">· {worker.area} ({distance} km)</span>
+            <MapPin className="w-3.5 h-3.5 flex-shrink-0 text-slate-400" />
+            <span className="text-slate-600 font-medium">{worker.area || 'Mumbai'}</span>
+            <span className="text-slate-400 font-normal">· {distance} km</span>
           </div>
 
-          <p className="text-[10px] text-slate-500 mt-0.5">
-            Zero visit fee · Transparent billing
-          </p>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+              {positiveFeedback}
+            </span>
+            <span className="text-[10px] text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+              Sample data
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* 4-Column Micro Stats Bar */}
-      <div className="grid grid-cols-4 gap-1 my-3 py-2 px-2 rounded-xl bg-slate-50 text-center border border-slate-100">
+      {/* 3-Column Micro Stats Bar */}
+      <div className="grid grid-cols-3 gap-1 my-3 py-2 px-2 rounded-xl bg-slate-50 text-center border border-slate-100">
         <div className="flex flex-col items-center">
-          <div className="flex items-center gap-0.5 text-xs font-bold text-slate-800">
-            <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            <span>{rating}</span>
-          </div>
-          <span className="text-[10px] text-slate-400">{reviewsCount} rev</span>
+          <span className="text-xs font-bold text-slate-800">{jobsDone}</span>
+          <span className="text-[10px] text-slate-400">Jobs done</span>
         </div>
 
         <div className="flex flex-col items-center border-l border-slate-200/60">
           <span className="text-xs font-bold text-slate-800">{expYears} yrs</span>
-          <span className="text-[10px] text-slate-400">Exp</span>
+          <span className="text-[10px] text-slate-400">Experience</span>
         </div>
 
         <div className="flex flex-col items-center border-l border-slate-200/60">
-          <span className="text-xs font-bold text-slate-800">{jobsDone}</span>
-          <span className="text-[10px] text-slate-400">Jobs</span>
-        </div>
-
-        <div className="flex flex-col items-center border-l border-slate-200/60">
-          <span className="text-xs font-bold text-slate-800">{distance} km</span>
-          <span className="text-[10px] text-slate-400 truncate max-w-[50px]">{worker.area?.split(' ')[0] || 'Near'}</span>
+          <span className="text-xs font-bold text-slate-800">{worker.vouches || 0}</span>
+          <span className="text-[10px] text-slate-400">Vouches</span>
         </div>
       </div>
 
       {/* Service Highlights / Trust Chips */}
       <div className="flex items-center gap-1.5 flex-wrap mb-3">
         <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-600 font-medium">
-          Verified Kit
+          Transparent billing
         </span>
         <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-600 font-medium">
-          Clean-up included
+          Direct payout
         </span>
         <span className="px-2 py-0.5 rounded-md bg-slate-100 text-[10px] text-slate-600 font-medium">
-          30-day redo guarantee
+          Zero commission
         </span>
       </div>
 

@@ -14,6 +14,13 @@ export function PhoneFrame({ children }) {
           <span className="text-xs font-semibold tracking-wider uppercase text-slate-300">
             Book My Service · Demo Mode
           </span>
+          <span
+            title="Multi-window live sync enabled via BroadcastChannel & localStorage"
+            className="flex items-center gap-1 text-[10px] text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20"
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
+            <span>Live sync</span>
+          </span>
         </div>
         <LanguageSwitch />
       </div>

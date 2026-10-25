@@ -163,6 +163,7 @@ export const useAppStore = create(
           landmark: landmark || '',
           schedule: schedule || { type: 'NOW', label: 'Instant Help (~20 min)' },
           status: JOB_STATUS.REQUESTED,
+          priceAgreedByCustomer: false,
           estimate: {
             labour,
             parts,
@@ -188,15 +189,26 @@ export const useAppStore = create(
             paidAt: null,
           },
           createdAt: Date.now(),
+          startedAt: null,
+          completedAt: null,
           feedback: null,
         };
 
         set((state) => ({
           bookings: [newBooking, ...state.bookings],
           activeBookingId: bookingId,
+          activeWorkerId: workerId,
         }));
 
         return bookingId;
+      },
+
+      setPriceAgreedByCustomer: (bookingId) => {
+        set((state) => ({
+          bookings: state.bookings.map((b) =>
+            b.id === bookingId ? { ...b, priceAgreedByCustomer: true } : b
+          ),
+        }));
       },
 
       sendCounterOffer: (bookingId, offeredAmount) => {
@@ -253,9 +265,24 @@ export const useAppStore = create(
               ...b,
               status: JOB_STATUS.CONFIRMED,
               finalPrice,
+              priceAgreedByCustomer: true,
             };
           }),
         }));
+      },
+
+      cancelBooking: (bookingId) => {
+        const booking = get().bookings.find((b) => b.id === bookingId);
+        if (!booking) return false;
+        if (!canTransition(booking.status, JOB_STATUS.CANCELLED)) return false;
+        set((state) => ({
+          bookings: state.bookings.map((b) =>
+            b.id === bookingId ? { ...b, status: JOB_STATUS.CANCELLED } : b
+          ),
+          activeBookingId:
+            state.activeBookingId === bookingId ? null : state.activeBookingId,
+        }));
+        return true;
       },
 
       workerAcceptBooking: (bookingId) => {
@@ -294,7 +321,9 @@ export const useAppStore = create(
 
         set((state) => ({
           bookings: state.bookings.map((b) =>
-            b.id === bookingId ? { ...b, status: JOB_STATUS.STARTED } : b
+            b.id === bookingId
+              ? { ...b, status: JOB_STATUS.STARTED, startedAt: Date.now() }
+              : b
           ),
         }));
 
@@ -434,6 +463,14 @@ export const useAppStore = create(
         }));
       },
 
+      resolveComplaint: (complaintId) => {
+        set((state) => ({
+          complaints: state.complaints.map((c) =>
+            c.id === complaintId ? { ...c, status: 'RESOLVED' } : c
+          ),
+        }));
+      },
+
       // Job Proof & Checklist actions
       updateJobProofPhoto: (bookingId, photoType, photoUrl) => {
         set((state) => ({
@@ -509,6 +546,20 @@ export const useAppStore = create(
         return payout;
       },
 
+      updateWorkerSetup: (workerId, { services, baseFare }) => {
+        set((state) => ({
+          workers: state.workers.map((w) =>
+            w.id === workerId
+              ? {
+                  ...w,
+                  ...(services ? { services } : {}),
+                  ...(baseFare !== undefined ? { baseFare: Number(baseFare) } : {}),
+                }
+              : w
+          ),
+        }));
+      },
+
       resetState: () => {
         set(getInitialState());
       },
@@ -516,6 +567,8 @@ export const useAppStore = create(
     {
       name: STORAGE_KEY,
       storage: createJSONStorage(() => localStorage),
+      skipHydration: true,
+      version: 1,
     }
   )
 );

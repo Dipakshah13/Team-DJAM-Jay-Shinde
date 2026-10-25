@@ -20,15 +20,16 @@ import {
   ShieldCheck,
   Navigation,
   Lock,
-  Star,
   MessageCircle,
   AlertOctagon,
   LifeBuoy,
   Check,
   Clock,
-  Sparkles
+  Sparkles,
+  Ban,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { TrustBadge } from '@/components/domain/TrustBadge';
 
 export default function CustomerJobPage() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export default function CustomerJobPage() {
   const bookingId = params?.bookingId;
   const bookings = useAppStore((state) => state.bookings);
   const workers = useAppStore((state) => state.workers);
+  const cancelBooking = useAppStore((state) => state.cancelBooking);
   const respondToExtraCharge = useAppStore((state) => state.respondToExtraCharge);
   const startJobWithOtp = useAppStore((state) => state.startJobWithOtp);
   const endJobWithOtp = useAppStore((state) => state.endJobWithOtp);
@@ -80,7 +82,7 @@ export default function CustomerJobPage() {
   return (
     <Screen
       title="Live Partner Tracking"
-      subtitle={`#${booking.id.slice(-6).toUpperCase()} · Khar West`}
+      subtitle={`#${booking.id.slice(-6).toUpperCase()} · ${booking.landmark || worker?.area || 'Mumbai'}`}
       back
       className="bg-[#f9f9ff] pb-24"
     >
@@ -157,10 +159,10 @@ export default function CustomerJobPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-[#071c36] leading-tight">
-                    {booking.status === 'STARTED' ? 'Service In Progress' : '8 mins away'}
+                    {booking.status === 'STARTED' ? 'Service In Progress' : (worker.etaLabel || '15 mins away')}
                   </p>
                   <p className="text-[10px] text-slate-500">
-                    1.4 km • Khar West Junction
+                    {worker.distanceKm || '1.2'} km • {worker.area}
                   </p>
                 </div>
               </div>
@@ -203,8 +205,8 @@ export default function CustomerJobPage() {
               <span>Partner {worker.name} will ask for this code to verify arrival.</span>
             </div>
 
-            {/* Demo Simulation button */}
-            <div className="mt-3 pt-2 border-t border-orange-100">
+            {/* Demo Simulation button & Cancel Button */}
+            <div className="mt-3 pt-2 border-t border-orange-100 space-y-2">
               <button
                 type="button"
                 onClick={() => {
@@ -214,6 +216,21 @@ export default function CustomerJobPage() {
                 className="w-full py-2 rounded-full bg-gradient-to-r from-[#ff6f00] to-amber-500 text-white font-bold text-xs shadow-xs active:scale-95 transition-all"
               >
                 Demo: Simulate Partner Arrival & Start
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const ok = cancelBooking(booking.id);
+                  if (ok) {
+                    toast.info('Booking cancelled.');
+                    router.push('/customer/home');
+                  }
+                }}
+                className="w-full py-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-semibold text-xs flex items-center justify-center gap-1 active:scale-95 transition-all"
+              >
+                <Ban className="w-3.5 h-3.5" />
+                <span>Cancel Booking</span>
               </button>
             </div>
           </section>
@@ -284,15 +301,13 @@ export default function CustomerJobPage() {
                 <ShieldCheck className="w-4 h-4 text-blue-600 flex-shrink-0" />
               </div>
               <div className="flex items-center gap-1.5 mt-0.5 text-xs">
-                <span className="flex items-center text-amber-600 font-bold">
-                  ★ {worker.rating || '4.93'}
-                </span>
-                <span className="text-slate-400">
-                  • {worker.jobsDone || '820'}+ jobs done
+                <TrustBadge worker={worker} showDetailButton={false} />
+                <span className="text-slate-500 font-medium">
+                  • {worker.jobsDone || 100} jobs done
                 </span>
               </div>
               <p className="text-[11px] text-slate-500 mt-0.5 truncate">
-                🛵 Hero Splendor • MH-02-EE-4120
+                🛵 Technician in {worker.area}
               </p>
             </div>
           </div>

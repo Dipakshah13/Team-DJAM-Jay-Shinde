@@ -127,10 +127,12 @@ export default function VouchPage() {
               <p className="text-xs text-cyan-200 font-mono">
                 BMS-0041-MH • {worker.role || 'Master Technician'}
               </p>
-              <div className="flex items-center gap-1 mt-1 text-amber-300 text-xs font-semibold">
-                <Star className="w-3.5 h-3.5 fill-amber-300" />
-                <span>
-                  {worker.rating || '4.92'} ({worker.jobsDone || 312} Jobs) • {worker.area}
+              <div className="flex items-center gap-1.5 mt-1 text-xs">
+                <span className="text-emerald-300 font-bold bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-500/30">
+                  96% Positive
+                </span>
+                <span className="text-slate-300 font-medium">
+                  {worker.jobsDone || 0} Jobs • {worker.area || 'Mumbai'}
                 </span>
               </div>
             </div>

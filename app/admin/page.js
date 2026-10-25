@@ -22,6 +22,7 @@ export default function AdminPage() {
   const complaints = useAppStore((state) => state.complaints) || [];
   const approveWorker = useAppStore((state) => state.approveWorker);
   const toggleWorkerVerified = useAppStore((state) => state.toggleWorkerVerified);
+  const resolveComplaint = useAppStore((state) => state.resolveComplaint);
 
   return (
     <Screen
@@ -191,22 +192,35 @@ export default function AdminPage() {
               complaints.map((c) => (
                 <div
                   key={c.id}
-                  className="p-4 bg-white rounded-3xl border border-red-100 shadow-sm space-y-2"
+                  className="p-4 bg-white rounded-3xl border border-slate-200 shadow-sm space-y-2"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-red-600 uppercase">
+                    <span className="text-xs font-bold text-slate-800 uppercase">
                       Complaint #{c.id.slice(-6)}
                     </span>
-                    <Badge variant="danger" size="xs">
+                    <Badge variant={c.status === 'RESOLVED' ? 'success' : 'danger'} size="xs">
                       {c.status}
                     </Badge>
                   </div>
                   <p className="text-sm font-medium text-heading">
                     {c.reason}
                   </p>
-                  <p className="text-xs text-muted">
-                    Reported on booking #{c.bookingId?.slice(-6)}
-                  </p>
+                  <div className="flex items-center justify-between pt-1 text-xs text-muted">
+                    <span>Reported on booking #{c.bookingId?.slice(-6)}</span>
+                    {c.status !== 'RESOLVED' && (
+                      <Button
+                        size="sm"
+                        variant="accent"
+                        onClick={() => {
+                          resolveComplaint(c.id);
+                          toast.success(`Complaint #${c.id.slice(-6)} resolved!`);
+                        }}
+                        icon={Check}
+                      >
+                        Resolve
+                      </Button>
+                    )}
+                  </div>
                 </div>
               ))
             ) : (

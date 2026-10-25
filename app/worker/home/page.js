@@ -11,6 +11,8 @@ import { Sheet } from '@/components/ui/Sheet';
 import { TrustBadge } from '@/components/domain/TrustBadge';
 import { PageTransition } from '@/components/layout/PageTransition';
 import { LanguageSwitch } from '@/components/layout/LanguageSwitch';
+import { calculateReceipt } from '@/lib/pricing';
+import { FEE_RATE } from '@/lib/constants';
 import {
   MapPin,
   ArrowRight,
@@ -68,28 +70,56 @@ export default function WorkerHomePage() {
     (b) => b.workerId === worker.id && ['CONFIRMED', 'STARTED', 'EXTRA_PENDING'].includes(b.status)
   );
 
-  // Completed jobs & Earnings
+  // Completed jobs & Earnings computed via calculateReceipt & FEE_RATE
   const completedJobs = bookings.filter(
     (b) => b.workerId === worker.id && (b.status === 'COMPLETED' || b.status === 'RATED')
   );
 
-  const totalGross = completedJobs.reduce((sum, b) => {
-    const labour = b.finalPrice || b.estimate?.labour || 0;
-    const approvedExtras = (b.extras || [])
-      .filter((e) => e.status === 'APPROVED')
-      .reduce((s, e) => s + e.amount, 0);
-    return sum + labour + approvedExtras;
-  }, 0);
+  const now = Date.now();
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  const sevenDaysMs = 7 * oneDayMs;
 
-  const totalFee = Math.round(totalGross * 0.08);
-  const totalNet = totalGross - totalFee;
+  const getJobReceipt = (b) =>
+    calculateReceipt({
+      estimate: b.estimate,
+      finalLabourPrice: b.finalPrice,
+      partsAmount: b.estimate?.parts || 0,
+      extras: b.extras,
+    });
 
-  const workerTransfers = workerPayouts.filter((p) => p.workerId === worker.id);
+  const totalGross = completedJobs.reduce(
+    (sum, b) => sum + getJobReceipt(b).totalPayable,
+    0
+  );
+  const totalFee = completedJobs.reduce(
+    (sum, b) => sum + getJobReceipt(b).platformFee,
+    0
+  );
+  const totalNet = completedJobs.reduce(
+    (sum, b) => sum + getJobReceipt(b).workerPayout,
+    0
+  );
+
+  const todayJobs = completedJobs.filter(
+    (b) => now - (b.completedAt || b.createdAt || 0) < oneDayMs
+  );
+  const todayEarnings = todayJobs.reduce(
+    (sum, b) => sum + getJobReceipt(b).workerPayout,
+    0
+  );
+
+  const weekJobs = completedJobs.filter(
+    (b) => now - (b.completedAt || b.createdAt || 0) < sevenDaysMs
+  );
+  const weekEarnings = weekJobs.reduce(
+    (sum, b) => sum + getJobReceipt(b).workerPayout,
+    0
+  );
+
+  const workerTransfers = (workerPayouts || []).filter((p) => p.workerId === worker.id);
   const totalWithdrawn = workerTransfers.reduce((sum, p) => sum + p.amount, 0);
 
-  // Pre-seed a base starting balance of ₹950 for instant demo withdrawal
-  const availableBalance = Math.max(0, totalNet + 950 - totalWithdrawn);
-  const todayEarnings = Math.max(1240, totalNet);
+  const availableBalance = Math.max(0, totalNet - totalWithdrawn);
 
   // Countdown timer effect
   useEffect(() => {
@@ -100,13 +130,7 @@ export default function WorkerHomePage() {
   }, []);
 
   const handleWithdraw = () => {
-    if (availableBalance <= 0) {
-      toast.info('No balance available for withdrawal right now.');
-      return;
-    }
-    const upiId = `${worker.name.toLowerCase().replace(/[^a-z0-9]/g, '')}@okhdfcbank`;
-    withdrawWorkerBalance(worker.id, availableBalance, upiId);
-    toast.success(`Transferred ₹${availableBalance} to UPI: ${upiId}!`);
+    toast.info('Coming soon in the full version');
   };
 
   return (
@@ -382,9 +406,10 @@ export default function WorkerHomePage() {
                     {worker.jobsDone + completedJobs.length}
                   </p>
                 </div>
-                <div className="flex items-center gap-0.5 mt-1 text-heading text-[10px] font-bold">
-                  <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                  <span>4.93 (98%)</span>
+                <div className="flex items-center gap-0.5 mt-1 text-emerald-700 text-[10px] font-bold">
+                  <span className="bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                    98% positive
+                  </span>
                 </div>
               </div>
             </div>
@@ -595,30 +620,39 @@ export default function WorkerHomePage() {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            workerRespondToCounter(b.id, false);
-                            toast.info(`Held original base fare ₹${b.estimate?.labour}`);
-                          }}
-                        >
-                          Hold ₹{b.estimate?.labour}
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="accent"
-                          onClick={() => {
-                            workerRespondToCounter(b.id, true);
-                            toast.success(`Accepted counter of ₹${b.counter?.offered}!`);
-                            router.push(`/worker/job/${b.id}`);
-                          }}
-                          icon={Check}
-                        >
-                          Accept ₹{b.counter?.offered}
-                        </Button>
-                      </div>
+                      {b.counter?.response === 'DECLINED' ? (
+                        <div className="p-3 bg-slate-50 rounded-xl text-xs text-slate-700 flex items-center justify-between border border-slate-200">
+                          <span className="font-semibold">Rate held at ₹{b.estimate?.labour}</span>
+                          <span className="text-[11px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">
+                            Waiting for customer decision
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-100">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              workerRespondToCounter(b.id, false);
+                              toast.info(`Held original base fare ₹${b.estimate?.labour}`);
+                            }}
+                          >
+                            Hold ₹{b.estimate?.labour}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="accent"
+                            onClick={() => {
+                              workerRespondToCounter(b.id, true);
+                              toast.success(`Accepted counter of ₹${b.counter?.offered}!`);
+                              router.push(`/worker/job/${b.id}`);
+                            }}
+                            icon={Check}
+                          >
+                            Accept ₹{b.counter?.offered}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   ))
                 ) : (
@@ -688,7 +722,7 @@ export default function WorkerHomePage() {
         isOpen={showWalletModal}
         onClose={() => setShowWalletModal(false)}
         title={t('wallet.title')}
-        description="Daily job payouts, fee breakdown and instant bank transfers."
+        description="Instant payout — roadmap preview • Daily job earnings computed from completed jobs."
       >
         <div className="space-y-4">
           {/* Large Balance Card */}
@@ -697,9 +731,11 @@ export default function WorkerHomePage() {
               <Wallet className="w-24 h-24" />
             </div>
 
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-300 block">
-              {t('wallet.withdrawable')}
-            </span>
+            <div className="flex items-center justify-center gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                Instant payout — roadmap preview
+              </span>
+            </div>
 
             <div className="text-4xl font-black text-amber-400 font-mono tracking-tight">
               ₹{availableBalance}

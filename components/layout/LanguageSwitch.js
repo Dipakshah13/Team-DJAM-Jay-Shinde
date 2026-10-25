@@ -4,10 +4,16 @@ import { useAppStore } from '@/store/useAppStore';
 import { LANGUAGES } from '@/lib/constants';
 import clsx from 'clsx';
 import { Globe } from 'lucide-react';
+import { useMounted } from '@/hooks/useMounted';
 
 export function LanguageSwitch({ compact = false }) {
+  const mounted = useMounted();
   const language = useAppStore((state) => state.language);
   const setLanguage = useAppStore((state) => state.setLanguage);
+
+  if (!mounted) {
+    return <div className="h-7 w-28 bg-white/10 rounded-full" />;
+  }
 
   return (
     <div className="flex items-center gap-1 bg-white/10 sm:bg-white/90 backdrop-blur-md p-1 rounded-full border border-white/20 sm:border-slate-200 shadow-sm">
