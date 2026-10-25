@@ -59,7 +59,7 @@ export default function TutorialPage() {
               onClick={handleSkip}
               className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 hover:bg-white/30 backdrop-blur-md border border-white/30 text-white text-xs font-semibold tracking-wide active:scale-95 transition-all shadow-xs"
             >
-              <span>Skip</span>
+              <span>{t('tutorial.skip')}</span>
               <ArrowRight className="w-3 h-3" />
             </button>
           )}
@@ -151,10 +151,10 @@ export default function TutorialPage() {
                   <span>Instant Discovery</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-1.5">
-                  Choose a <span className="text-[#FF6F00]">service</span>
+                  {t('tutorial.step1.title')}
                 </h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Pick from 50+ vetted home services with instant booking. Transparent rates and verified Mumbai professionals at your doorstep in 20 mins.
+                  {t('tutorial.step1.desc')}
                 </p>
               </div>
 
@@ -241,10 +241,10 @@ export default function TutorialPage() {
                   <span>100% Price Clarity</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-1.5">
-                  Agree on a <span className="text-[#FF6F00]">fair price</span>
+                  {t('tutorial.step2.title')}
                 </h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  No surprise charges at the door. Standard rate cards with upfront quotes, in-app counter offers, and digital GST receipts every time.
+                  {t('tutorial.step2.desc')}
                 </p>
               </div>
 
@@ -334,10 +334,10 @@ export default function TutorialPage() {
                   <span>100% Secure Start</span>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tight mb-1.5">
-                  Work <span className="text-emerald-600">safely</span> with <span className="text-[#FF6F00]">OTP</span>
+                  {t('tutorial.step3.title')}
                 </h2>
                 <p className="text-xs text-slate-600 leading-relaxed">
-                  Your technician only starts work when you share the 4-digit code. Every pro is police verified with full background screening.
+                  {t('tutorial.step3.desc')}
                 </p>
               </div>
 
@@ -377,7 +377,7 @@ export default function TutorialPage() {
             onClick={handleNext}
             className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-[#FF6F00] to-amber-500 text-white font-bold text-sm shadow-[0_8px_20px_rgba(255,111,0,0.38)] active:scale-95 transition-all"
           >
-            <span>{currentSlide === 2 ? 'Get started' : 'Next'}</span>
+            <span>{currentSlide === 2 ? t('tutorial.getStarted') : t('tutorial.next')}</span>
             {currentSlide === 2 ? (
               <Rocket className="w-4 h-4" />
             ) : (

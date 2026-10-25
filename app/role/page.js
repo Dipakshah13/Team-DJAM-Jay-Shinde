@@ -102,13 +102,10 @@ export default function RolePage() {
           </div>
 
           <h1 className="text-[24px] leading-tight font-extrabold text-white tracking-tight">
-            How will you use <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-400 to-[#FF6F00]">
-              Book My Service?
-            </span>
+            {t('role.title')}
           </h1>
           <p className="text-xs text-slate-300/80 mt-1 leading-snug">
-            Choose your role to customize your experience. You can switch between booking and earning anytime.
+            {t('role.subtitle')}
           </p>
         </div>
 
@@ -135,10 +132,10 @@ export default function RolePage() {
             <div className="flex items-center justify-between gap-3 relative z-10">
               <div className="flex-1 pr-1">
                 <h2 className="text-xl font-bold text-white group-hover:text-blue-200 transition-colors">
-                  I need a service
+                  {t('role.customer.title')}
                 </h2>
                 <p className="text-xs text-slate-200 font-medium mt-0.5 leading-snug">
-                  Book trusted help nearby
+                  {t('role.customer.desc')}
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
@@ -189,10 +186,10 @@ export default function RolePage() {
             <div className="flex items-center justify-between gap-3 relative z-10">
               <div className="flex-1 pr-1">
                 <h2 className="text-xl font-bold text-white group-hover:text-amber-200 transition-colors">
-                  I offer a service
+                  {t('role.worker.title')}
                 </h2>
                 <p className="text-xs text-amber-100 font-medium mt-0.5 leading-snug">
-                  Get jobs, set your own price
+                  {t('role.worker.desc')}
                 </p>
 
                 <div className="flex flex-wrap gap-1.5 mt-2.5">
@@ -238,7 +235,7 @@ export default function RolePage() {
             className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-400 hover:text-white px-3 py-1 rounded-full hover:bg-white/10 transition-colors"
           >
             <Shield className="w-3.5 h-3.5" />
-            <span>Switch to Admin Oversight Panel</span>
+            <span>{t('role.admin.title')}</span>
           </button>
         </footer>
 
